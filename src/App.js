@@ -133,7 +133,6 @@ function App() {
           onChange={handleFiles}
           //placeholder="장소명, 주소 형식으로 입력해 주세요"
         />
-        <button onClick={handleFiles}>파일 업로드</button>
       </div>
       <div ref={mapContainer} style={{ width: "100%", height: "800px" }}></div>
     </>
