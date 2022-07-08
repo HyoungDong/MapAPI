@@ -154,8 +154,11 @@ function App() {
       const posIdx = positions.findIndex(
         (position) => position.index === nextIdx
       );
-      map.setCenter(positions[posIdx].position);
-      return nextIdx;
+      if (positions[posIdx]?.position) {
+        map.setCenter(positions[posIdx]?.position);
+        return nextIdx;
+      }
+      return prev;
     });
   }, [values, positions]);
   const moveLeft = useCallback(() => {
@@ -164,8 +167,11 @@ function App() {
       const posIdx = positions.findIndex(
         (position) => position.index === nextIdx
       );
-      map.setCenter(positions[posIdx].position);
-      return nextIdx;
+      if (positions[posIdx]?.position) {
+        map.setCenter(positions[posIdx]?.position);
+        return nextIdx;
+      }
+      return prev;
     });
   }, [values, positions]);
   return (
