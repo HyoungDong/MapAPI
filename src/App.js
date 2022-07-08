@@ -1,4 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Container,
+  Indicator,
+  IndicatorContainer,
+  InputContainer,
+  LeftArrow,
+  MapContainer,
+  RightArrow,
+  TextBox,
+} from "./styles";
 
 const { kakao, XLSX } = window;
 function App() {
@@ -11,14 +21,24 @@ function App() {
   const [imageSrc, setImageSrc] = useState(null);
   const [mapOption, setMapOption] = useState(null);
   const [values, setValues] = useState([]);
+  const [positions, setPositions] = useState([]);
+  const [indicator, setIndicator] = useState(0);
   const searchMap = useCallback(() => {
-    values.forEach((value) => {
+    values.forEach((value, idx) => {
       geocoder.addressSearch(value.address, function (result, status) {
         // 정상적으로 검색이 완료됐으면
         if (status === kakao.maps.services.Status.OK) {
           console.log(status);
           const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
           // 결과값으로 받은 위치를 마커로 표시합니다
+          //console.log(coords);
+          setPositions((prev) => [
+            ...prev,
+            {
+              index: idx,
+              position: coords,
+            },
+          ]);
           const marker = new kakao.maps.Marker({
             map: map,
             position: coords,
@@ -33,7 +53,7 @@ function App() {
             infowindow.open(map, marker);
           });
           //infowindow.open(map, marker);
-          map.setCenter(coords);
+          if (idx === 0) map.setCenter(coords);
           const content = `<div class ="label" style="font-weight:bold"><span class="left"></span><span class="center">${value.key}</span><span class="right"></span></div>`;
           const customOverlay = new kakao.maps.CustomOverlay({
             map: map,
@@ -46,6 +66,7 @@ function App() {
       });
     });
   }, [values, geocoder, markerImage, map]);
+
   useEffect(() => {
     if (!mapOption)
       setMapOption({
@@ -71,7 +92,11 @@ function App() {
   // };
   useEffect(() => {
     if (values.length) searchMap();
+    console.log(positions);
   }, [values]);
+  // useEffect(() => {
+  //   console.log(positions);
+  // }, [positions]);
   const handleFiles = (e) => {
     const reader = new FileReader();
     reader.onload = function () {
@@ -104,8 +129,8 @@ function App() {
             }
           }
         }
-        console.log(nameResult);
-        console.log(addressResult);
+        // console.log(nameResult);
+        // console.log(addressResult);
         nameResult.forEach((result, idx) => {
           setValues((prev) => {
             return [
@@ -122,20 +147,53 @@ function App() {
     };
     reader.readAsBinaryString(fileInput.current.files[0]);
   };
+
+  const moveRight = useCallback(() => {
+    setIndicator((prev) => {
+      const nextIdx = (prev + 1) % values.length;
+      const posIdx = positions.findIndex(
+        (position) => position.index === nextIdx
+      );
+      map.setCenter(positions[posIdx].position);
+      return nextIdx;
+    });
+  }, [values, positions]);
+  const moveLeft = useCallback(() => {
+    setIndicator((prev) => {
+      const nextIdx = (prev - 1 + values.length) % values.length;
+      const posIdx = positions.findIndex(
+        (position) => position.index === nextIdx
+      );
+      map.setCenter(positions[posIdx].position);
+      return nextIdx;
+    });
+  }, [values, positions]);
   return (
-    <>
-      <div>
+    <Container>
+      <InputContainer>
         <input
           ref={fileInput}
           id="Input"
           type="file"
           accept=".xls,.xlsx"
           onChange={handleFiles}
+          style={{ background: "transparent" }}
           //placeholder="장소명, 주소 형식으로 입력해 주세요"
         />
-      </div>
-      <div ref={mapContainer} style={{ width: "100%", height: "800px" }}></div>
-    </>
+      </InputContainer>
+      <MapContainer ref={mapContainer}></MapContainer>
+      <IndicatorContainer>
+        <Indicator>
+          <LeftArrow onClick={moveLeft} />
+          <TextBox>
+            {`${values[indicator]?.key || ""} - ${
+              values[indicator]?.name || ""
+            }`}
+          </TextBox>
+          <RightArrow onClick={moveRight} />
+        </Indicator>
+      </IndicatorContainer>
+    </Container>
   );
 }
 
