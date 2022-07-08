@@ -56,7 +56,7 @@ function App() {
       setImageSrc(
         "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"
       );
-    if (!imageSize) setImageSize(new kakao.maps.Size(24, 35));
+    if (!imageSize) setImageSize(new kakao.maps.Size(34, 45));
     if (imageSrc && imageSize && !markerImage)
       setMarkerImage(new kakao.maps.MarkerImage(imageSrc, imageSize));
     if (mapOption && !map)
