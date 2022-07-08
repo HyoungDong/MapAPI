@@ -33,11 +33,12 @@ const Indicator = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60%;
+  width: 90%;
 `;
 const RightArrow = styled(arrow)`
   cursor: pointer;
   fill: pink;
+  margin-left: auto;
 `;
 const TextBox = styled.div`
   font-size: 30px;
@@ -45,6 +46,7 @@ const TextBox = styled.div`
 `;
 const LeftArrow = styled(arrow)`
   cursor: pointer;
+  margin-right: auto;
   fill: pink;
   transform: rotate(180deg);
 `;
